@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\đại học quy nhơn\\tương tác người máy\\app_quanlykhoVLXD\\app_quanlykhoVLXD\\app_quanlykhoVLXD.csproj": {}
+    "D:\\dai_hoc_quy_nhon\\tuong_tac_nguoi_may\\app_quanlykhoVLXD\\app_quanlykhoVLXD\\app_quanlykhoVLXD.csproj": {}
   },
   "projects": {
-    "D:\\đại học quy nhơn\\tương tác người máy\\app_quanlykhoVLXD\\app_quanlykhoVLXD\\app_quanlykhoVLXD.csproj": {
+    "D:\\dai_hoc_quy_nhon\\tuong_tac_nguoi_may\\app_quanlykhoVLXD\\app_quanlykhoVLXD\\app_quanlykhoVLXD.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\đại học quy nhơn\\tương tác người máy\\app_quanlykhoVLXD\\app_quanlykhoVLXD\\app_quanlykhoVLXD.csproj",
+        "projectUniqueName": "D:\\dai_hoc_quy_nhon\\tuong_tac_nguoi_may\\app_quanlykhoVLXD\\app_quanlykhoVLXD\\app_quanlykhoVLXD.csproj",
         "projectName": "app_quanlykhoVLXD",
-        "projectPath": "D:\\đại học quy nhơn\\tương tác người máy\\app_quanlykhoVLXD\\app_quanlykhoVLXD\\app_quanlykhoVLXD.csproj",
+        "projectPath": "D:\\dai_hoc_quy_nhon\\tuong_tac_nguoi_may\\app_quanlykhoVLXD\\app_quanlykhoVLXD\\app_quanlykhoVLXD.csproj",
         "packagesPath": "C:\\Users\\vietr\\.nuget\\packages\\",
-        "outputPath": "D:\\đại học quy nhơn\\tương tác người máy\\app_quanlykhoVLXD\\app_quanlykhoVLXD\\obj\\",
+        "outputPath": "D:\\dai_hoc_quy_nhon\\tuong_tac_nguoi_may\\app_quanlykhoVLXD\\app_quanlykhoVLXD\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

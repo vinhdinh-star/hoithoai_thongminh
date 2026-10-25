@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "pKza7fnCT0E=",
+  "dgSpecHash": "boYYSMZdKy4=",
   "success": true,
-  "projectFilePath": "D:\\đại học quy nhơn\\tương tác người máy\\app_quanlykhoVLXD\\app_quanlykhoVLXD\\app_quanlykhoVLXD.csproj",
+  "projectFilePath": "D:\\dai_hoc_quy_nhon\\tuong_tac_nguoi_may\\app_quanlykhoVLXD\\app_quanlykhoVLXD\\app_quanlykhoVLXD.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\vietr\\.nuget\\packages\\microsoft.data.sqlite\\10.0.13\\microsoft.data.sqlite.10.0.13.nupkg.sha512",
     "C:\\Users\\vietr\\.nuget\\packages\\microsoft.data.sqlite.core\\10.0.13\\microsoft.data.sqlite.core.10.0.13.nupkg.sha512",
