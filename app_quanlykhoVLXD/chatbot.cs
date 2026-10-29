@@ -27,13 +27,17 @@ namespace app_quanlykhoVLXD
         {
             this.Text = "Chatbot AI";
             this.Size = new Size(350, 480);
-            this.FormBorderStyle = FormBorderStyle.SizableToolWindow;
+            this.FormBorderStyle = FormBorderStyle.Sizable;
+            this.MaximizeBox = true;
+            this.MinimizeBox = true;
             this.StartPosition = FormStartPosition.CenterScreen;
             this.TopMost = true;
 
             lstChatHistory = new ListBox();
             lstChatHistory.Size = new Size(310, 350);
             lstChatHistory.Location = new Point(12, 12);
+            lstChatHistory.HorizontalScrollbar = true;   // câu dài cuộn ngang được
+            lstChatHistory.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             lstChatHistory.Items.Add("Bot: Xin chào! Tôi có thể giúp gì cho bạn?");
             this.Controls.Add(lstChatHistory);
 
@@ -41,6 +45,7 @@ namespace app_quanlykhoVLXD
             txtChatInput.Size = new Size(220, 30);
             txtChatInput.Location = new Point(12, 380);
             txtChatInput.Font = new Font("Segoe UI", 10);
+            txtChatInput.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             this.Controls.Add(txtChatInput);
 
             btnSend = new Button();
@@ -50,8 +55,8 @@ namespace app_quanlykhoVLXD
             btnSend.BackColor = Color.FromArgb(82, 95, 122);
             btnSend.ForeColor = Color.White;
             btnSend.FlatStyle = FlatStyle.Flat;
+            btnSend.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
 
-            // Gắn sự kiện bất đồng bộ (async) để gọi API không bị đơ giao diện
             btnSend.Click += async (s, e) =>
             {
                 string userMessage = txtChatInput.Text.Trim();
@@ -60,11 +65,9 @@ namespace app_quanlykhoVLXD
                     lstChatHistory.Items.Add("Bạn: " + userMessage);
                     txtChatInput.Clear();
 
-                    // Gọi hàm lấy câu trả lời từ AI
                     string botReply = await GetAIResponseAsync(userMessage);
                     lstChatHistory.Items.Add("Bot: " + botReply);
 
-                    // Cuộn xuống dòng mới nhất
                     lstChatHistory.TopIndex = lstChatHistory.Items.Count - 1;
                 }
             };
@@ -72,51 +75,51 @@ namespace app_quanlykhoVLXD
         }
 
         // Hàm kết nối tới AI API
-       /* private async Task<string> GetAIResponseAsync(string prompt)
-        {
-            try
-            {
-                using (HttpClient client = new HttpClient())
-                {
-                    string url = $"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={apiKey}";
+        /* private async Task<string> GetAIResponseAsync(string prompt)
+         {
+             try
+             {
+                 using (HttpClient client = new HttpClient())
+                 {
+                     string url = $"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={apiKey}";
 
-                    var requestBody = new
-                    {
-                        contents = new[]
-                        {
-                    new
-                    {
-                        parts = new[]
-                        {
-                            new { text = prompt }
-                        }
-                    }
-                }
-                    };
+                     var requestBody = new
+                     {
+                         contents = new[]
+                         {
+                     new
+                     {
+                         parts = new[]
+                         {
+                             new { text = prompt }
+                         }
+                     }
+                 }
+                     };
 
-                    string jsonContent = Newtonsoft.Json.JsonConvert.SerializeObject(requestBody);
-                    HttpContent content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+                     string jsonContent = Newtonsoft.Json.JsonConvert.SerializeObject(requestBody);
+                     HttpContent content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
 
-                    HttpResponseMessage response = await client.PostAsync(url, content);
-                    string jsonResponse = await response.Content.ReadAsStringAsync();
+                     HttpResponseMessage response = await client.PostAsync(url, content);
+                     string jsonResponse = await response.Content.ReadAsStringAsync();
 
-                    if (response.IsSuccessStatusCode)
-                    {
-                        JObject parsedData = JObject.Parse(jsonResponse);
-                        string reply = parsedData["candidates"]?[0]?["content"]?["parts"]?[0]?["text"]?.ToString();
-                        return string.IsNullOrEmpty(reply) ? "Bot không trả về nội dung." : reply.Trim();
-                    }
-                    else
-                    {
-                        return $"Lỗi API ({response.StatusCode}): Kiểm tra lại Key.";
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                return "Lỗi ngoại lệ: " + ex.Message;
-            }
-        }*/
+                     if (response.IsSuccessStatusCode)
+                     {
+                         JObject parsedData = JObject.Parse(jsonResponse);
+                         string reply = parsedData["candidates"]?[0]?["content"]?["parts"]?[0]?["text"]?.ToString();
+                         return string.IsNullOrEmpty(reply) ? "Bot không trả về nội dung." : reply.Trim();
+                     }
+                     else
+                     {
+                         return $"Lỗi API ({response.StatusCode}): Kiểm tra lại Key.";
+                     }
+                 }
+             }
+             catch (Exception ex)
+             {
+                 return "Lỗi ngoại lệ: " + ex.Message;
+             }
+         }*/
         // Hàm trả lời thông minh dựa trên từ khóa (Phục vụ vấn đáp / demo offline)
         private async Task<string> GetAIResponseAsync(string prompt)
         {
