@@ -24,6 +24,7 @@ git clone [https://github.com/vinhdinh-star/tuong_tac_nguoi_may.git](https://git
 ``bash
 2. Chuẩn bị file Model AI (.gguf)
 Tải mô hình đã được lượng tử hóa tối ưu cho CPU: qwen2.5-1.5b-instruct-q5_k_m.gguf (dung lượng khoảng ~1.2 GB).
+https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct-GGUF
 
 Tạo một thư mục tên là Models nằm cùng cấp với thư mục dự án hoặc bên trong thư mục chạy của file .exe.
 
