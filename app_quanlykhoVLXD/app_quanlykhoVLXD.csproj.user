@@ -1,7 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <_LastSelectedProfileId>D:\dai_hoc_quy_nhon\tuong_tac_nguoi_may\app_quanlykhoVLXD\app_quanlykhoVLXD\Properties\PublishProfiles\FolderProfile.pubxml</_LastSelectedProfileId>
+  </PropertyGroup>
   <ItemGroup>
     <Compile Update="AI_pro.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Baocao.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="caidat.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Update="chatbot.cs">
@@ -14,6 +23,18 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Update="Form1.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="FrmDangKyDoanhNghiep.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="FrmDangNhap.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="FrmQuanLyDoanhNghiep.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="FrmTaoTaiKhoanDoanhNghiep.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Update="nhacungcap.cs">

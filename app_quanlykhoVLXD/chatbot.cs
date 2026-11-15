@@ -153,6 +153,15 @@ namespace app_quanlykhoVLXD
             {
                 return "Ứng dụng 'app_quanlykhoVLXD' hỗ trợ quản lý toàn diện: Quản lý danh mục sản phẩm, theo dõi tồn kho, nhập/xuất file dữ liệu và hỗ trợ tra cứu thông minh qua Chatbot AI.";
             }
+            else if (query.Contains("phần mềm được thiết kế") || query.Contains("thiết kế") || query.Contains("khi nào"))
+            {
+                return "Ứng dụng 'app_quanlykhoVLXD' trong quá trình học tập với ứng dụng là nghiên cưu và luyện tập. Là dự án cá nhân được phát triển bởi sinh viên có sự hướng dẫn của giảng viên trường đại học quy nhơn.";
+            }
+            else if (query.Contains("liên hệ") || query.Contains("số diện thoại") || query.Contains("hổ trợ"))
+            {
+                return "để hiễu rõ hơn về cach dùng ứng dụng, bạn liên hệ số diện thoại 0365326305. Dê dược hỗ trợ và biết thêm thong tin chi tiết, bạn gửi câu hỏi qua gmail v56147592@gmail.com.";
+            }
+
             // Câu trả lời mặc định nếu không khớp từ khóa nào
             else
             {

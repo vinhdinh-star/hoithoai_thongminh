@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
 using Microsoft.Data.Sqlite;
 using System.Drawing;
@@ -21,15 +23,17 @@ namespace app_quanlykhoVLXD
         {
             InitializeComponent();
             InitializeComponentCustom();
-            LoadSampleData(false);
+            LoadSampleData(true);
         }
 
         private void InitializeComponentCustom()
         {
             this.Text = "Sản phẩm - Quản lý kho VLXD";
+            this.Size = new Size(950, 600);
+            this.StartPosition = FormStartPosition.CenterScreen;
             this.BackColor = Color.FromArgb(220, 220, 220);
 
-            // 1. KHUNG NỘI DUNG (không còn sidebar / header / chatbot - đã có ở Form1)
+            // 1. KHUNG NỘI DUNG CHÍNH
             pnlContent = new Panel();
             pnlContent.Dock = DockStyle.Fill;
             pnlContent.Padding = new Padding(15);
@@ -40,13 +44,22 @@ namespace app_quanlykhoVLXD
             pnlSubToolbar.Height = 45;
 
             Button btnTabSanPham = new Button() { Text = "Sản phẩm", Location = new Point(0, 5), Size = new Size(100, 30), BackColor = Color.LightGray };
-            Button btnCancel = new Button() { Text = "Hủy", Size = new Size(80, 30), Anchor = AnchorStyles.Top | AnchorStyles.Right };
+            Button btnCancel = new Button() { Text = "Quay về Form chính", Size = new Size(140, 30), Anchor = AnchorStyles.Top | AnchorStyles.Right };
+            btnCancel.Click += (s, e) => {
+                if (this.IsDisposed) return;
+                Form1 mainForm = new Form1("Doanh nghiệp VLXD");
+                mainForm.Show();
+                this.Hide();
+                this.Close();
+            };
+
             Button btnCreateOrder = new Button() { Text = "Tạo & duyệt đơn hàng", Size = new Size(150, 30), Anchor = AnchorStyles.Top | AnchorStyles.Right };
             Button btnCreatePurchase = new Button() { Text = "Tạo đơn đặt hàng", Size = new Size(140, 30), Anchor = AnchorStyles.Top | AnchorStyles.Right };
 
             pnlSubToolbar.Controls.AddRange(new Control[] { btnTabSanPham, btnCancel, btnCreateOrder, btnCreatePurchase });
             pnlSubToolbar.Resize += (s, e) =>
             {
+                if (this.IsDisposed) return;
                 int right = pnlSubToolbar.ClientSize.Width;
                 btnCreatePurchase.Location = new Point(right - btnCreatePurchase.Width, 5);
                 btnCreateOrder.Location = new Point(btnCreatePurchase.Left - btnCreateOrder.Width - 10, 5);
@@ -59,10 +72,10 @@ namespace app_quanlykhoVLXD
             pnlRightDetail.Width = 295;
             pnlRightDetail.BackColor = Color.FromArgb(245, 240, 240);
 
-            txtMaDon = CreateDetailField(pnlRightDetail, "Mã đơn", 15);
-            txtNhaPhanPhoi = CreateDetailField(pnlRightDetail, "Nhà phân phối", 90);
-            txtNgayNhap = CreateDetailField(pnlRightDetail, "Ngày nhập hàng", 165);
-            txtSoSanPham = CreateDetailField(pnlRightDetail, "Số sản phẩm", 240);
+            txtMaDon = CreateDetailField(pnlRightDetail, "Mã SP", 15);
+            txtNhaPhanPhoi = CreateDetailField(pnlRightDetail, "Tên vật tư", 90);
+            txtNgayNhap = CreateDetailField(pnlRightDetail, "Ngày cập nhật", 165);
+            txtSoSanPham = CreateDetailField(pnlRightDetail, "Số lượng tồn", 240);
             txtTrangThai = CreateDetailField(pnlRightDetail, "Trạng thái", 315);
 
             // 4. KHUNG GIỮA
@@ -75,25 +88,23 @@ namespace app_quanlykhoVLXD
             pnlEmptyState.Dock = DockStyle.Fill;
             pnlEmptyState.BackColor = Color.FromArgb(210, 210, 210);
 
-            Label lblTitle = new Label() { Text = "SẢN PHẨM", Location = new Point(30, 20), AutoSize = true, Font = new Font("Arial", 12, FontStyle.Bold) };
-            TextBox txtSearchBox = new TextBox() { Text = "TÌM KIẾM", Location = new Point(30, 55), Size = new Size(400, 25), TextAlign = HorizontalAlignment.Center };
-            Button btnLoaiSP = new Button() { Text = "Loại sản phẩm", Location = new Point(440, 53), Size = new Size(100, 28) };
+            Label lblTitle = new Label() { Text = "QUẢN LÝ SẢN PHẨM & VẬT TƯ", Location = new Point(30, 20), AutoSize = true, Font = new Font("Segoe UI", 12, FontStyle.Bold) };
+            TextBox txtSearchBox = new TextBox() { Text = "TÌM KIẾM...", Location = new Point(30, 55), Size = new Size(350, 28) };
+            Button btnLoaiSP = new Button() { Text = "Lọc loại SP", Location = new Point(390, 53), Size = new Size(100, 30) };
 
             btnAddProduct = new Button();
-            btnAddProduct.Text = "Thêm sản phẩm";
+            btnAddProduct.Text = "Thêm sản phẩm mới";
             btnAddProduct.Location = new Point(30, 100);
-            btnAddProduct.Size = new Size(200, 35);
-            btnAddProduct.BackColor = Color.White;
+            btnAddProduct.Size = new Size(200, 38);
+            btnAddProduct.BackColor = Color.FromArgb(46, 204, 113);
+            btnAddProduct.ForeColor = Color.White;
+            btnAddProduct.FlatStyle = FlatStyle.Flat;
+            btnAddProduct.Font = new Font("Segoe UI", 9.5F, FontStyle.Bold);
             btnAddProduct.Click += btnThemSanPham_Click;
 
-            Panel pnlThanhToan = new Panel() { Location = new Point(30, 300), Size = new Size(250, 100), BackColor = Color.FromArgb(200, 200, 200), Anchor = AnchorStyles.Bottom | AnchorStyles.Left };
-            pnlThanhToan.Paint += (s, e) => e.Graphics.DrawString("Thanh toán", Font, Brushes.Black, 10, 10);
+            pnlEmptyState.Controls.AddRange(new Control[] { lblTitle, txtSearchBox, btnLoaiSP, btnAddProduct });
 
-            Panel pnlGhiChu = new Panel() { Location = new Point(290, 300), Size = new Size(250, 100), BackColor = Color.FromArgb(200, 200, 200), Anchor = AnchorStyles.Bottom | AnchorStyles.Left };
-            pnlGhiChu.Paint += (s, e) => e.Graphics.DrawString("Ghi chú", Font, Brushes.Black, 10, 10);
-
-            pnlEmptyState.Controls.AddRange(new Control[] { lblTitle, txtSearchBox, btnLoaiSP, btnAddProduct, pnlThanhToan, pnlGhiChu });
-
+            // Nút thêm sản phẩm nhanh ở thanh công cụ trên
             Button btnThem = new Button()
             {
                 Text = "+ Thêm sản phẩm",
@@ -104,7 +115,7 @@ namespace app_quanlykhoVLXD
             btnThem.Click += btnThemSanPham_Click;
             pnlSubToolbar.Controls.Add(btnThem);
 
-            // --- Trạng thái có danh sách ---
+            // --- Trạng thái có danh sách (DataGridView) ---
             dgvProducts = new DataGridView();
             dgvProducts.Dock = DockStyle.Fill;
             dgvProducts.BackgroundColor = Color.FromArgb(210, 210, 210);
@@ -116,19 +127,18 @@ namespace app_quanlykhoVLXD
             pnlCenterContainer.Controls.Add(dgvProducts);
             pnlCenterContainer.Controls.Add(pnlEmptyState);
 
-            // 5. GHÉP LẠI: Fill trước, rồi Right, rồi Top
+            // 5. GHÉP CÁC PANEL VÀO NỘI DUNG CHÍNH
             pnlContent.Controls.Add(pnlCenterContainer);
             pnlContent.Controls.Add(pnlRightDetail);
             pnlContent.Controls.Add(pnlSubToolbar);
             this.Controls.Add(pnlContent);
-
-
         }
 
         private TextBox CreateDetailField(Panel parent, string labelName, int topCoord)
         {
             Label lbl = new Label();
             lbl.Text = labelName;
+            lbl.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             lbl.Location = new Point(10, topCoord);
             lbl.Size = new Size(270, 20);
             parent.Controls.Add(lbl);
@@ -136,23 +146,29 @@ namespace app_quanlykhoVLXD
             TextBox txt = new TextBox();
             txt.Location = new Point(10, topCoord + 22);
             txt.Size = new Size(275, 25);
+            txt.Font = new Font("Segoe UI", 9.5F);
             txt.BackColor = Color.FromArgb(255, 245, 245);
             parent.Controls.Add(txt);
             return txt;
         }
+
         private void btnThemSanPham_Click(object sender, EventArgs e)
         {
+            if (this.IsDisposed) return;
             using (sanpham frmSP = new sanpham())
             {
-                frmSP.ShowDialog();   // chờ form sản phẩm đóng
+                frmSP.ShowDialog();
             }
-            LoadSampleData(true);     // nạp lại danh sách từ SQLite
+            LoadSampleData(true);
         }
 
         private void LoadSampleData(bool forceLoad = true)
         {
+            // Kiểm tra ngay đầu hàm: nếu form đã bị hủy hoặc chưa sẵn sàng thì thoát luôn tránh lỗi
+            if (this.IsDisposed || !this.IsHandleCreated) return;
+
             string connectionString = "Data Source=quan_ly_kho.db";
-            DataTable? dt = new DataTable();
+            DataTable dt = new DataTable();
 
             try
             {
@@ -162,47 +178,61 @@ namespace app_quanlykhoVLXD
                     string query = "SELECT MaVT AS [Mã SP], TenVT AS [Tên vật tư], DVT AS [ĐVT], SoLuongTon AS [Số lượng] FROM VatTu";
 
                     using (SqliteCommand cmd = new SqliteCommand(query, conn))
-                    using (SqliteDataReader reader = cmd.ExecuteReader())
                     {
-                        dt.Load(reader);
+                        using (SqliteDataReader reader = cmd.ExecuteReader())
+                        {
+                            dt.Load(reader);
+                        }
                     }
                 }
             }
             catch (Exception)
             {
-                // Bảng chưa tồn tại hoặc lỗi kết nối -> hiện giao diện trống
                 dt = null;
             }
 
+            // Kiểm tra lại lần nữa trước khi can thiệp vào các Control trên giao diện
+            if (this.IsDisposed || !this.IsHandleCreated) return;
+
             if (dt != null && dt.Rows.Count > 0)
             {
-                pnlEmptyState.Visible = false;
-                dgvProducts.Visible = true;
-                dgvProducts.DataSource = dt;
+                if (pnlEmptyState != null) pnlEmptyState.Visible = false;
+                if (dgvProducts != null)
+                {
+                    dgvProducts.Visible = true;
+                    dgvProducts.DataSource = dt;
+                }
             }
             else
             {
-                dgvProducts.Visible = false;
-                pnlEmptyState.Visible = true;
+                if (dgvProducts != null) dgvProducts.Visible = false;
+                if (pnlEmptyState != null) pnlEmptyState.Visible = true;
 
-                txtMaDon.Clear();
-                txtNhaPhanPhoi.Clear();
-                txtNgayNhap.Clear();
-                txtSoSanPham.Clear();
-                txtTrangThai.Clear();
+                if (txtMaDon != null && !txtMaDon.IsDisposed) txtMaDon.Clear();
+                if (txtNhaPhanPhoi != null && !txtNhaPhanPhoi.IsDisposed) txtNhaPhanPhoi.Clear();
+                if (txtNgayNhap != null && !txtNgayNhap.IsDisposed) txtNgayNhap.Clear();
+                if (txtSoSanPham != null && !txtSoSanPham.IsDisposed) txtSoSanPham.Clear();
+                if (txtTrangThai != null && !txtTrangThai.IsDisposed) txtTrangThai.Clear();
             }
         }
 
         private void DgvProducts_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.RowIndex < 0) return;
+            if (this.IsDisposed) return;
+            if (e.RowIndex < 0 || dgvProducts == null || dgvProducts.Rows[e.RowIndex].IsNewRow) return;
 
             DataGridViewRow row = dgvProducts.Rows[e.RowIndex];
-            txtMaDon.Text = Convert.ToString(row.Cells["Mã SP"].Value);
-            txtNhaPhanPhoi.Text = Convert.ToString(row.Cells["Tên vật tư"].Value);
-            txtNgayNhap.Text = DateTime.Now.ToString("dd/MM/yyyy");
-            txtSoSanPham.Text = Convert.ToString(row.Cells["Số lượng"].Value);
-            txtTrangThai.Text = "Đang lưu kho";
+
+            if (txtMaDon != null && !txtMaDon.IsDisposed)
+                txtMaDon.Text = Convert.ToString(row.Cells["Mã SP"].Value);
+            if (txtNhaPhanPhoi != null && !txtNhaPhanPhoi.IsDisposed)
+                txtNhaPhanPhoi.Text = Convert.ToString(row.Cells["Tên vật tư"].Value);
+            if (txtNgayNhap != null && !txtNgayNhap.IsDisposed)
+                txtNgayNhap.Text = DateTime.Now.ToString("dd/MM/yyyy");
+            if (txtSoSanPham != null && !txtSoSanPham.IsDisposed)
+                txtSoSanPham.Text = Convert.ToString(row.Cells["Số lượng"].Value);
+            if (txtTrangThai != null && !txtTrangThai.IsDisposed)
+                txtTrangThai.Text = "Đang lưu kho";
         }
     }
 }

@@ -1,5 +1,14 @@
+# Bỏ qua thư mục build của Visual Studio
 bin/
 obj/
 .vs/
-*.user
-*.suo
+
+# Bỏ qua file model AI dung lượng lớn (> 100MB)
+*.gguf
+Models/*.gguf
+qwen_finetuned/
+qwen_lora_adapter/
+
+# Bỏ qua file tạm Python nếu có
+__pycache__/
+.ipynb_checkpoints/

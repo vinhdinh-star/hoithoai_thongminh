@@ -50,6 +50,18 @@
         "net8.0-windows7.0": {
           "targetAlias": "net8.0-windows",
           "dependencies": {
+            "LLamaSharp": {
+              "target": "Package",
+              "version": "[0.30.0, )"
+            },
+            "LLamaSharp.Backend.Cpu": {
+              "target": "Package",
+              "version": "[0.30.0, )"
+            },
+            "Microsoft.Data.SqlClient": {
+              "target": "Package",
+              "version": "[7.1.2, )"
+            },
             "Microsoft.Data.Sqlite": {
               "target": "Package",
               "version": "[10.0.13, )"

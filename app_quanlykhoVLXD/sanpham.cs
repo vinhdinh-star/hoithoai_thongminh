@@ -17,13 +17,20 @@ namespace app_quanlykhoVLXD
 
         public sanpham()
         {
-           
+
             InitializeComponent();
-            // Đặt 2 dòng này ở SAU InitializeComponent():
-            pnlOverlay = new Panel(); // Khởi tạo panel
+
+            // Khởi tạo các thành phần giao diện của bạn ở đây (nếu có)
+            pnlOverlay = new Panel();
             pnlOverlay.BackColor = Color.FromArgb(100, 0, 0, 0);
             pnlOverlay.BringToFront();
             // Đưa lớp phủ lên trên nền
+
+            // 1. Tạo một instance mới của Form1 (truyền tên doanh nghiệp hoặc để trống tùy theo constructor của bạn)
+            Form1 mainForm = new Form1("Tên doanh nghiệp");
+            mainForm.Show();
+
+           
         }
 
         private void button1_Click(object sender, EventArgs e)

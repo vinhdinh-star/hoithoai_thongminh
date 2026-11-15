@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Globalization;
 using System.Windows.Forms;
 using Microsoft.Data.Sqlite;
+using Microsoft.Data.SqlClient;
 
 namespace app_quanlykhoVLXD
 {
@@ -277,6 +278,17 @@ namespace app_quanlykhoVLXD
             dgv.Columns.Add(col);
         }
 
+        private void btnQuayVe_Click(object sender, EventArgs e)
+        {
+            if (this.IsDisposed) return;
+
+            // Gọi trực tiếp hàm mở lại Form1
+            Form1 mainForm = new Form1("Doanh nghiệp VLXD");
+            mainForm.Show();
+
+            this.Hide();
+            this.Dispose(); // Giải phóng form con hiện tại
+        }
         // ================= DATABASE =================
         private void EnsureTables()
         {

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Data;
+using Microsoft.Data.SqlClient;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
@@ -7,6 +9,22 @@ namespace app_quanlykhoVLXD
 {
     public partial class Form1 : Form
     {
+        // Chuỗi kết nối đến SQL Server của bạn
+        private string connectionString = "Server=(localdb)\\MSSQLLocalDB;Database=app_quanlykhoVLXD;Trusted_Connection=True;";
+
+        private string tenDoanhNghiepHienTai = "";
+
+        // 1. Constructor mặc định (nếu gọi trực tiếp không qua đăng nhập)
+        public Form1() : this("Hệ thống Quản lý Kho VLXD") { }
+
+        // 2. Constructor nhận tên doanh nghiệp được truyền từ Form đăng nhập sang
+        public Form1(string tenDoanhNghiep)
+        {
+            tenDoanhNghiepHienTai = tenDoanhNghiep;
+            InitializeCustomLayout();
+            LoadSoLuongDonHang();
+        }
+
         // Các thành phần giao diện chính
         private Panel pnlSidebar;
         private Panel pnlTopBar;
@@ -20,21 +38,46 @@ namespace app_quanlykhoVLXD
 
         // Controls trong MainContent
         private Button btnDonHang;
+        private Label lblThongKeDonHang; // Label hiển thị số lượng đơn hàng
         private Panel pnlGridContainer;
         private TextBox txtSubSearch;
         private ComboBox cmbCategory;
         private DataGridView dgvProducts;
         private Button btnChatBot;
 
-        public Form1()
+        // Hàm truy vấn SQL Server để đếm tổng số lượng đơn hàng
+        private void LoadSoLuongDonHang()
         {
-            InitializeCustomLayout();
+            string query = "SELECT COUNT(*) FROM DonHang";
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        int tongDonHang = Convert.ToInt32(cmd.ExecuteScalar());
+
+                        btnDonHang.Text = $"ĐƠN HÀNG ({tongDonHang})";
+                        if (lblThongKeDonHang != null)
+                        {
+                            lblThongKeDonHang.Text = $"Tổng số đơn hàng trong hệ thống: {tongDonHang}";
+                        }
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                btnDonHang.Text = "ĐƠN HÀNG (0)";
+            }
         }
 
         private void btnDonHang_Click(object sender, EventArgs e)
         {
             donhang frmDonHang = new donhang();
             frmDonHang.Show();
+            this.Hide(); // Ẩn Form1 thay vì dùng this.Close() làm tắt app
         }
 
         private void btnChatBot_Click(object sender, EventArgs e)
@@ -42,22 +85,44 @@ namespace app_quanlykhoVLXD
             FormChatBot frmChat = new FormChatBot();
             frmChat.TopMost = true;
             frmChat.Show();
+            // Không gọi this.Close() ở đây để giữ Form1 hoạt động ngầm
         }
-
-        private void MoTrangQLSanPham()
+        private void MoTrangBaocao()
         {
             pnlMainContent.Controls.Clear();
 
-            trangqlsanpham frm = new trangqlsanpham();
-
+            // Khởi tạo form báo cáo (baocao) dạng con để nhúng vào Panel
+            baocao frm = new baocao();
             frm.TopLevel = false;
             frm.FormBorderStyle = FormBorderStyle.None;
             frm.Dock = DockStyle.Fill;
 
+            // Thêm vào Panel nội dung chính và đưa nút ChatBot lên trên cùng
             pnlMainContent.Controls.Add(frm);
+            pnlMainContent.Controls.Add(btnChatBot);
+            btnChatBot.BringToFront();
 
             frm.Show();
         }
+        private void MoTrangQLSanPham()
+        {
+            pnlMainContent.Controls.Clear();
+
+            // Khởi tạo form quản lý sản phẩm dạng con (Embed vào Panel)
+            trangqlsanpham frm = new trangqlsanpham();
+            frm.TopLevel = false;
+            frm.FormBorderStyle = FormBorderStyle.None;
+            frm.Dock = DockStyle.Fill;
+
+            // Thêm vào Panel và hiển thị bên trong Form hiện tại
+            pnlMainContent.Controls.Add(frm);
+            pnlMainContent.Controls.Add(btnChatBot);
+            btnChatBot.BringToFront();
+
+            frm.Show();
+            // Đã xóa bỏ lệnh frm.Close() và this.Close() gây lỗi
+        }
+
         private Form currentPage;
 
         private void MoTrang(Form frm)
@@ -75,22 +140,22 @@ namespace app_quanlykhoVLXD
             btnChatBot.BringToFront();
 
             frm.Show();
+            // Không gọi this.Close() ở đây
         }
-        // Trang Nhập hàng: bấm "Tạo đơn đặt hàng" sẽ chuyển sang trang Đặt hàng nhập
+
         private void MoTrangNhapHang()
         {
             nhaphang trang = new nhaphang();
 
             trang.TaoDonDatHang += data =>
             {
-                // BeginInvoke để trang cũ không bị thay ngay trong lúc đang xử lý nút bấm
                 this.BeginInvoke(new Action(() => MoTrang(new Dathangnhap(data))));
             };
 
             MoTrang(trang);
-        }// Trang Nhập hàng: bấm "Tạo đơn đặt hàng" sẽ chuyển sang trang Đặt hàng nhập
-         // Trang Nhập hàng: bấm "Tạo đơn đặt hàng" sẽ chuyển sang trang Đặt hàng nhập
-        
+            // Không gọi this.Close() ở đây
+        }
+
         private void InitializeCustomLayout()
         {
             // 1. Cấu hình Form chính
@@ -123,7 +188,8 @@ namespace app_quanlykhoVLXD
                 "chuyển kho",
                 "Nhà cung cấp",
                 "Vị trí lưu kho",
-                "Báo cáo"
+                "Báo cáo",
+                "Cài đặt"
             };
 
             int startY = 65;
@@ -143,7 +209,6 @@ namespace app_quanlykhoVLXD
 
                 if (itemName.Contains("AI Pro"))
                 {
-                    // Mục AI Pro: màu tím nổi bật, mở form AI_pro
                     btnMenu.BackColor = Color.FromArgb(108, 92, 231);
                     btnMenu.Font = new Font("Segoe UI", 10, FontStyle.Bold);
 
@@ -157,12 +222,11 @@ namespace app_quanlykhoVLXD
                     btnMenu.MouseHover += (s, e) => { btnMenu.BackColor = Color.FromArgb(128, 114, 235); };
                     btnMenu.MouseLeave += (s, e) => { btnMenu.BackColor = Color.FromArgb(108, 92, 231); };
                 }
+
                 else if (itemName == "Tồn kho")
                 {
                     btnMenu.BackColor = Color.FromArgb(82, 95, 122);
-
                     btnMenu.Click += (s, e) => { MoTrangQLSanPham(); };
-
                     btnMenu.MouseHover += (s, e) => { btnMenu.BackColor = Color.FromArgb(105, 118, 143); };
                     btnMenu.MouseLeave += (s, e) => { btnMenu.BackColor = Color.FromArgb(82, 95, 122); };
                 }
@@ -187,26 +251,35 @@ namespace app_quanlykhoVLXD
                 else if (itemName == "Nhà cung cấp")
                 {
                     btnMenu.BackColor = Color.FromArgb(82, 95, 122);
-
                     btnMenu.Click += (s, e) => { MoTrang(new nhacungcap()); };
-
+                    btnMenu.MouseHover += (s, e) => { btnMenu.BackColor = Color.FromArgb(105, 118, 143); };
+                    btnMenu.MouseLeave += (s, e) => { btnMenu.BackColor = Color.FromArgb(82, 95, 122); };
+                }
+                else if (itemName == "Báo cáo")
+                {
+                    btnMenu.BackColor = Color.FromArgb(82, 95, 122);
+                    btnMenu.Click += (s, e) => { MoTrangBaocao(); };
+                    btnMenu.MouseHover += (s, e) => { btnMenu.BackColor = Color.FromArgb(105, 118, 143); };
+                    btnMenu.MouseLeave += (s, e) => { btnMenu.BackColor = Color.FromArgb(82, 95, 122); };
+                }
+                else if (itemName == "Cài đặt")
+                {
+                    btnMenu.BackColor = Color.FromArgb(82, 95, 122);
+                    btnMenu.Click += (s, e) => { MoTrang(new caidat()); };
                     btnMenu.MouseHover += (s, e) => { btnMenu.BackColor = Color.FromArgb(105, 118, 143); };
                     btnMenu.MouseLeave += (s, e) => { btnMenu.BackColor = Color.FromArgb(82, 95, 122); };
                 }
                 else
                 {
                     btnMenu.BackColor = Color.FromArgb(82, 95, 122);
-
                     btnMenu.MouseHover += (s, e) => { btnMenu.BackColor = Color.FromArgb(105, 118, 143); };
                     btnMenu.MouseLeave += (s, e) => { btnMenu.BackColor = Color.FromArgb(82, 95, 122); };
                 }
 
-                // QUAN TRỌNG: thêm nút vào sidebar
                 pnlSidebar.Controls.Add(btnMenu);
             }
-            // Kết thúc vòng for ở đây
 
-            // 3. THANH TOPBAR (Phía trên cùng bên phải)
+            // 3. THANH TOPBAR
             pnlTopBar = new Panel();
             pnlTopBar.Location = new Point(200, 0);
             pnlTopBar.Size = new Size(900, 150);
@@ -223,13 +296,13 @@ namespace app_quanlykhoVLXD
             pnlTopBar.Controls.Add(txtGlobalSearch);
 
             btnAdmin = new Button();
-            btnAdmin.Text = "ADMIN";
-            btnAdmin.Font = new Font("Segoe UI", 9.5F, FontStyle.Bold);
+            btnAdmin.Text = tenDoanhNghiepHienTai; // Hiển thị tên doanh nghiệp lên góc trên
+            btnAdmin.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             btnAdmin.BackColor = Color.FromArgb(220, 225, 230);
             btnAdmin.FlatStyle = FlatStyle.Flat;
             btnAdmin.FlatAppearance.BorderColor = Color.FromArgb(170, 175, 185);
-            btnAdmin.Size = new Size(100, 32);
-            btnAdmin.Location = new Point(620, 25);
+            btnAdmin.Size = new Size(160, 32);
+            btnAdmin.Location = new Point(580, 25);
             pnlTopBar.Controls.Add(btnAdmin);
 
             btnExportFile = CreateTopButton("Xuất file", 440, 78);
@@ -247,16 +320,24 @@ namespace app_quanlykhoVLXD
             pnlMainContent.BackColor = Color.FromArgb(185, 192, 203);
 
             btnDonHang = new Button();
-            btnDonHang.Text = "ĐƠN HÀNG";
+            btnDonHang.Text = "ĐƠN HÀNG (0)";
             btnDonHang.Font = new Font("Segoe UI", 10, FontStyle.Bold);
             btnDonHang.ForeColor = Color.FromArgb(40, 45, 55);
             btnDonHang.BackColor = Color.White;
             btnDonHang.FlatStyle = FlatStyle.Flat;
             btnDonHang.FlatAppearance.BorderColor = Color.FromArgb(150, 158, 168);
-            btnDonHang.Size = new Size(135, 36);
+            btnDonHang.Size = new Size(160, 36);
             btnDonHang.Location = new Point(30, 20);
             pnlMainContent.Controls.Add(btnDonHang);
             btnDonHang.Click += new EventHandler(btnDonHang_Click);
+
+            lblThongKeDonHang = new Label();
+            lblThongKeDonHang.Text = "Đang tải dữ liệu đơn hàng...";
+            lblThongKeDonHang.Font = new Font("Segoe UI", 9.5F, FontStyle.Italic);
+            lblThongKeDonHang.ForeColor = Color.FromArgb(40, 45, 55);
+            lblThongKeDonHang.Location = new Point(205, 27);
+            lblThongKeDonHang.AutoSize = true;
+            pnlMainContent.Controls.Add(lblThongKeDonHang);
 
             pnlGridContainer = new Panel();
             pnlGridContainer.Location = new Point(30, 68);
@@ -326,11 +407,8 @@ namespace app_quanlykhoVLXD
             btnChatBot.BringToFront();
 
             this.Controls.Add(pnlMainContent);
-            this.Controls.Add(pnlTopBar);
-            this.Controls.Add(pnlSidebar);
-
-
-            
+            this.Controls.Add(this.pnlTopBar);
+            this.Controls.Add(this.pnlSidebar);
         }
 
         private Button CreateTopButton(string text, int x, int y)
@@ -343,6 +421,26 @@ namespace app_quanlykhoVLXD
             btn.Size = new Size(95, 32);
             btn.Location = new Point(x, y);
             return btn;
+        }
+        // Hàm dùng chung để quay về Form1 từ bất kỳ trang con nào bên trong Panel hoặc Form độc lập
+        public static void QuayVeFormChinh(Form currentForm)
+        {
+            if (currentForm == null || currentForm.IsDisposed) return;
+
+            // 1. Kiểm tra xem ứng dụng đã có instance của Form1 đang mở hay ẩn chưa, hoặc tạo mới
+            Form1 mainForm = Application.OpenForms["Form1"] as Form1;
+            if (mainForm == null || mainForm.IsDisposed)
+            {
+                mainForm = new Form1("Doanh nghiệp VLXD"); // Truyền tên doanh nghiệp của bạn vào đây
+            }
+
+            mainForm.Show();
+            mainForm.BringToFront();
+
+            // 2. Nếu trang hiện tại được nhúng trong Panel của Form1 thì chỉ cần Clear Panel hoặc Dispose nó
+            // Nếu nó mở dạng form độc lập thì ẩn/đóng nó đi
+            currentForm.Hide();
+            currentForm.Close();
         }
     }
 }
